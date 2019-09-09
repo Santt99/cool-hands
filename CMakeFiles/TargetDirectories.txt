@@ -1,0 +1,3 @@
+/home/santiagojuarez/Documents/imgpros/projects/video/CMakeFiles/rebuild_cache.dir
+/home/santiagojuarez/Documents/imgpros/projects/video/CMakeFiles/main.dir
+/home/santiagojuarez/Documents/imgpros/projects/video/CMakeFiles/edit_cache.dir
