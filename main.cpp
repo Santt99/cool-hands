@@ -69,9 +69,9 @@ int main(){
         if(exposure == "Image is underexposure\n"){
             imshow( "Display window3", bicolorImage(equalizedImage,3, 1) );
         }else if(exposure == "Image is overexposure\n"){
-            imshow( "Display window3", bicolorImage(equalizedImage,1, 0) );
+            imshow( "Display window3", bicolorImage(frameGray,128, 1) );
         }else{
-            imshow( "Display window3", bicolorImage(frameGray,100, 0) );
+            imshow( "Display window3", bicolorImage(frameGray,128, 0) );
         }
         
 
