@@ -17,6 +17,8 @@ opencv2/imgcodecs.hpp
 /home/santiagojuarez/Documents/imgpros/projects/video/opencv2/imgcodecs.hpp
 iostream
 -
+string
+-
 
 /usr/local/include/opencv4/opencv2/calib3d.hpp
 opencv2/core.hpp
