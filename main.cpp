@@ -17,6 +17,7 @@ string getExposure(float howManyTimesAColorIsRepeated[], Mat image);
 Mat getEqualizedImage(Mat image, float cdf[]);
 float *getPMF(float array[], float howManyTimesAColorIsRepeated[], Mat image);
 float *getCDF(float array[], float howManyTimesAColorIsRepeated[], float pmf[]);
+Mat bicolorImage(Mat image, int umbral, int type);
 
 int main(){
     //Open camera
@@ -45,6 +46,9 @@ int main(){
         namedWindow( "Display window1", WINDOW_AUTOSIZE  );
         imshow( "Display window1", getHistogram(frameGray, howManyTimesAColorIsRepeated) );
         
+       
+
+
         //Calculate pmf and cdf
         float *pmf, *cdf;
         float pmfArray[256], cdfArray[256];
@@ -53,11 +57,24 @@ int main(){
 
         //Display equalizedimage
         namedWindow( "Display window2", WINDOW_AUTOSIZE  );
-        imshow( "Display window2", getEqualizedImage(frameGray,cdf) );
+        Mat equalizedImage = getEqualizedImage(frameGray,cdf);
+        imshow( "Display window2", equalizedImage);
 
         //Calculate exposure
         string exposure = getExposure(howManyTimesAColorIsRepeated, frameGray);
         cout << exposure;
+
+         //Display histogram
+        namedWindow( "Display window3", WINDOW_AUTOSIZE  );
+        if(exposure == "Image is underexposure\n"){
+            imshow( "Display window3", bicolorImage(equalizedImage,3, 1) );
+        }else if(exposure == "Image is overexposure\n"){
+            imshow( "Display window3", bicolorImage(equalizedImage,1, 0) );
+        }else{
+            imshow( "Display window3", bicolorImage(frameGray,100, 0) );
+        }
+        
+
         waitKey(20);
         if(waitKey(30) >= 0) break;
         
@@ -128,7 +145,7 @@ string getExposure(float howManyTimesAColorIsRepeated[], Mat image){
 
     int maxPos = getPosOfMaximum(cdf);
     
-    if(maxPos <= 85){
+    if(maxPos <= 35){
         return "Image is underexposure\n";
     }else if(maxPos <= 200){
         return "Image is well contrated\n";
@@ -154,6 +171,26 @@ float *getHowManyTimesAColorIsRepeated(Mat image,  float colorCount[]){
 
     return colorCount;
 }
+
+Mat bicolorImage(Mat image, int umbral, int type){
+    for (int y = 0; y < image.rows; y++)
+    {
+        for (int x = 0; x < image.cols; x++)
+        {
+            
+            if((image.at<uchar>(y,x) > umbral && type == 0) || (image.at<uchar>(y,x) < umbral && type == 1)){
+                image.at<uchar>(y,x) = 255;
+                
+            }else{
+                image.at<uchar>(y,x) = 0;
+               
+            }
+        }
+        
+    }
+    return image;
+}
+
 
 //Search for the maximum value and return the position
 int getPosOfMaximum(float *array){
