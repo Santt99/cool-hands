@@ -20,7 +20,6 @@ float *getCDF(float array[], float howManyTimesAColorIsRepeated[], float pmf[]);
 
 int main(){
     //Open camera
-    namedWindow("frame",WINDOW_AUTOSIZE);
     VideoCapture cap(0);
 
     if(!cap.isOpened()){
@@ -32,7 +31,7 @@ int main(){
         // Camera image
         Mat frame;
         cap >> frame;
-        
+
         // Show camera image in gray scale
         Mat frameGray;
         cvtColor(frame, frameGray, COLOR_BGR2GRAY);
@@ -57,7 +56,7 @@ int main(){
         imshow( "Display window2", getEqualizedImage(frameGray,cdf) );
 
         //Calculate exposure
-        string exposure = getExposure(howManyTimesAColorIsRepeated, image);
+        string exposure = getExposure(howManyTimesAColorIsRepeated, frameGray);
         cout << exposure;
         waitKey(20);
         if(waitKey(30) >= 0) break;
