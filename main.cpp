@@ -19,20 +19,25 @@ float *getPMF(float array[], float howManyTimesAColorIsRepeated[], Mat image);
 float *getCDF(float array[], float howManyTimesAColorIsRepeated[], float pmf[]);
 
 int main(){
+    //Open camera
     namedWindow("frame",WINDOW_AUTOSIZE);
     VideoCapture cap(0);
 
     if(!cap.isOpened()){
-        cout << "Cam no";
+        cout << "No camera detected!!";
         return -1;
-        }
+    }
 
     while(true){
+        // Camera image
         Mat frame;
         cap >> frame;
+        
+        // Show camera image in gray scale
         Mat frameGray;
         cvtColor(frame, frameGray, COLOR_BGR2GRAY);
         imshow("Frame", frameGray);
+
         //Calculate color count
         float colorCount[256];
         float *howManyTimesAColorIsRepeated = getHowManyTimesAColorIsRepeated(frameGray,colorCount);
@@ -64,6 +69,26 @@ int main(){
 
     return 0;
 }
+
+// Calculate histogram and return representing image
+Mat getHistogram(Mat image, float howManyTimesAColorIsRepeated[]){
+    float mostReaped = 1024/maximum(howManyTimesAColorIsRepeated);
+    float histogram[256];
+    for (int i = 0; i < 255; i++)
+    {
+        histogram[i] = howManyTimesAColorIsRepeated[i];
+    }
+    
+    Mat histogramImage(1024,1024,CV_8U,Scalar(0));
+    for (int i = 0; i < 255; i++)
+    {
+        int from = i*4;
+        int y = (histogram[i] * mostReaped);
+        rectangle(histogramImage,Point(from,histogramImage.rows),Point(from + 2,histogramImage.rows - y),Scalar(255,255,255), FILLED,LINE_8,0);
+    }
+    return histogramImage;
+}
+
 Mat getEqualizedImage(Mat image, float cdf[]){
     Mat equalizedImage = image.clone();
     for (int y = 0; y < equalizedImage.rows; y++)
@@ -76,18 +101,7 @@ Mat getEqualizedImage(Mat image, float cdf[]){
     }
     return equalizedImage;
 }
-int getPosOfMaximum(float *array){
-    float *max = array;
-    int xPos = 0;
-    for (int i = 1; i < 255; i++)
-    {
-        if(*max < array[i]){
-            max = &array[i];
-            xPos = i;
-        }
-    }
-    return xPos;
-}
+
 float *getPMF(float array[], float howManyTimesAColorIsRepeated[], Mat image){
     for (int i = 0; i < 255; i++)
     {
@@ -141,24 +155,20 @@ float *getHowManyTimesAColorIsRepeated(Mat image,  float colorCount[]){
 
     return colorCount;
 }
-Mat getHistogram(Mat image, float howManyTimesAColorIsRepeated[]){
-    float mostReaped = 1024/maximum(howManyTimesAColorIsRepeated);
-    float histogram[256];
-    for (int i = 0; i < 255; i++)
-    {
-        histogram[i] = howManyTimesAColorIsRepeated[i];
-    }
-    
-    Mat histogramImage(1024,1024,CV_8U,Scalar(0));
-    for (int i = 0; i < 255; i++)
-    {
-        int from = i*4;
-        int y = (histogram[i] * mostReaped);
-        rectangle(histogramImage,Point(from,histogramImage.rows),Point(from + 2,histogramImage.rows - y),Scalar(255,255,255), FILLED,LINE_8,0);
-    }
-    return histogramImage;
-}
 
+//Search for the maximum value and return the position
+int getPosOfMaximum(float *array){
+    float *max = array;
+    int xPos = 0;
+    for (int i = 1; i < 255; i++)
+    {
+        if(*max < array[i]){
+            max = &array[i];
+            xPos = i;
+        }
+    }
+    return xPos;
+}
 //Search fot the maximum value 
 float maximum(float *array){
     float *max = array;
